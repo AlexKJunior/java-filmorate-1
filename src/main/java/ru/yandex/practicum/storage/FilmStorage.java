@@ -26,4 +26,6 @@ public interface FilmStorage {
     Genre getGenreById(int id);
 
     List<Genre> getGenres();
+
+    List<Film> getFilmsBySearch(String query, String by);
 }

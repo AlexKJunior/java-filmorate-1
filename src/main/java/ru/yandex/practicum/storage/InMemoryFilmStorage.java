@@ -104,4 +104,9 @@ public class InMemoryFilmStorage implements FilmStorage {
     public List<Genre> getGenres() {
         return new ArrayList<>(genres.values());
     }
+
+    @Override
+    public List<Film> getFilmsBySearch(String query, String by) {
+        return new ArrayList<>(films.values());
+    }
 }

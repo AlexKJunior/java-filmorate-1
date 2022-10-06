@@ -72,4 +72,8 @@ public class FilmService {
     public List<Genre> getGenres() {
         return filmStorage.getGenres();
     }
+
+    public List<Film> getFilmsBySearch(String query, String by) {
+        return filmStorage.getFilmsBySearch(query, by);
+    }
 }

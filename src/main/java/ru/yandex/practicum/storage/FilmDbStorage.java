@@ -185,6 +185,65 @@ public class FilmDbStorage implements FilmStorage {
         return jdbcTemplate.query(sql, (rs, rowNum) -> makeGenre(rs));
     }
 
+    @Override
+    public List<Film> getFilmsBySearch(String query, String by) {
+        String director = new String();
+        String title = new String();
+
+        for (String s : by.split(",")) {
+            if (s.toLowerCase().equals("director")) {
+                director = s;
+            } else if (s.toLowerCase().equals("title")) {
+                title = s;
+            } else {
+                throw new IllegalArgumentException("Некорректный атрибут query");
+            }
+        }
+        String sql;
+
+        if (director == null && title != null) {
+            sql = "select FILMS.FILM_ID AS film_id, FILMS.name as name, description, release_date, duration, rate, FILMS.RATING_ID as rating_id, " +
+                    "count(USER_ID) + RATE as CNT from FILMS left join LIKES L on FILMS.FILM_ID = L.FILM_ID " +
+                    "where FILMS.name like '%?%' " +
+                    "group by FILMS.FILM_ID, FILMS.name, description, release_date, duration, FILMS.RATING_ID, RATE " +
+                    "order by CNT desc";
+            List<Film> films = jdbcTemplate.query(sql, (rs, rowNum) -> makeFilms(rs), query);
+            for (Film film : films) {
+                fillFilmLikeListForFilm(film);
+                fillGenresForFilm(film);
+            }
+            return films;
+        } else if (director != null && title == null) {
+            //TODO необходимо поменять селект для поиска по режиссерам
+            sql = "select FILMS.FILM_ID AS film_id, FILMS.name as name, description, release_date, duration, rate, FILMS.RATING_ID as rating_id, " +
+                    "count(USER_ID) + RATE as CNT from FILMS left join LIKES L on FILMS.FILM_ID = L.FILM_ID " +
+                    "where FILMS.name like '%?%' " +
+                    "group by FILMS.FILM_ID, FILMS.name, description, release_date, duration, FILMS.RATING_ID, RATE " +
+                    "order by CNT desc";
+            List<Film> films = jdbcTemplate.query(sql, (rs, rowNum) -> makeFilms(rs), query);
+            for (Film film : films) {
+                fillFilmLikeListForFilm(film);
+                fillGenresForFilm(film);
+            }
+            return films;
+        } else {
+            //TODO необходимо поменять селект для поиска и по режисерам и по названиям фильма
+            sql = "select FILMS.FILM_ID AS film_id, FILMS.name as name, description, release_date, duration, rate, FILMS.RATING_ID as rating_id, " +
+                    "count(USER_ID) + RATE as CNT from FILMS left join LIKES L on FILMS.FILM_ID = L.FILM_ID " +
+                    "where FILMS.name like '%?%' " +
+                    "group by FILMS.FILM_ID, FILMS.name, description, release_date, duration, FILMS.RATING_ID, RATE " +
+                    "order by CNT desc";
+            List<Film> films = jdbcTemplate.query(sql, (rs, rowNum) -> makeFilms(rs), query);
+            for (Film film : films) {
+                fillFilmLikeListForFilm(film);
+                fillGenresForFilm(film);
+            }
+            return films;
+        }
+
+
+    }
+
     public Genre makeGenre(ResultSet rs) throws SQLException {
         Genre genre = new Genre();
         genre.setId(rs.getInt("genre_id"));

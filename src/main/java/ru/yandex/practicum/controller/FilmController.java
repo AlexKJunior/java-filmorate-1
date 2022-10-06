@@ -101,4 +101,9 @@ public class FilmController {
         log.info("Рейтинг MPA успешно сформирован");
         return genres;
     }
+
+    @GetMapping("/fimls/search")
+    public List<Film> getFilmBySearch(@RequestParam String query, @RequestParam String by) {
+        return filmService.getFilmsBySearch(query, by);
+    }
 }
